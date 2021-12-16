@@ -1,7 +1,6 @@
 import os
 import re
 from instagrapi import Client
-import instagrapi.exceptions
 from dotenv import load_dotenv
 from pprint import pprint
 
@@ -15,11 +14,11 @@ def is_user_exist(client, user) -> None:
         pass
 
 
-def check_comments_users(client, post_link):
+def check_comments_users(client, post):
     regex = '(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)'
 
     comments = client.media_comments(
-        client.media_pk_from_url(post_link), amount=0
+        client.media_pk_from_url(post), amount=0
     )
 
     comments_text = [
@@ -36,12 +35,20 @@ def check_comments_users(client, post_link):
     return correct_comment_users
 
 
-def collect_likers(client, post_link):
+def search_likers(client, post):
     likers_users = client.media_likers(
-        client.media_pk_from_url(post_link)
+        client.media_pk_from_url(post)
     )
 
     return [user.pk for user in likers_users]
+
+
+def search_followers(client, user):
+    followers = client.user_followers(
+        client.user_info_by_username(user).pk, amount=0
+    ).keys()
+
+    return followers
 
 
 if __name__ == '__main__':
@@ -53,13 +60,18 @@ if __name__ == '__main__':
     client = Client()
     client.login(login, password)
 
-    post_link = 'https://www.instagram.com/p/BtON034lPhu/'
+    post = 'https://www.instagram.com/p/CUFFXu5IYIN/'
+    post_user = 'goldencalfrevda'
 
-    correct_comment_users = check_comments_users(client, post_link)
+    correct_comment_users = check_comments_users(client, post)
 
-    id_likers_users = collect_likers(client, post_link)
+    id_likers = search_likers(client, post)
+    ids_followers = search_followers(client, post_user)
 
-    like_and_comment_users = [
-        x for x in correct_comment_users if x[0] in id_likers_users
-    ]
-    pprint(like_and_comment_users)
+    complied_rules_users = set([
+        x for x in correct_comment_users
+        if x[0] in id_likers and x[0] in ids_followers
+
+    ])
+
+    pprint(complied_rules_users)
