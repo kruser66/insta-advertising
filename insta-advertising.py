@@ -1,5 +1,6 @@
 import os
 import re
+import argparse
 from instagrapi import Client
 from dotenv import load_dotenv
 from pprint import pprint
@@ -13,6 +14,14 @@ def is_user_exist(client, user) -> None:
 
     except Exception:
         pass
+
+
+def is_correct_post(client, post):
+    try:
+        client.media_pk_from_url(post)
+        return True
+    except Exception:
+        return False
 
 
 def check_comments_users(client, post):
@@ -58,32 +67,36 @@ if __name__ == '__main__':
     login = os.getenv('INSTAGRAM_LOGIN')
     password = os.getenv('INSTAGRAM_PASSWORD')
 
+    parser = argparse.ArgumentParser(
+        description='Определяем победителя конкурса в Инстаграмм'
+    )
+    parser.add_argument('post', nargs='?', help='Ссылка на пост в Инстаграмм')
+
+    args = parser.parse_args()
+    if not args.post:
+        parser.print_help()
+        exit()
+
     client = Client()
-    # client.login(login, password)
+    client.login(login, password)
 
-    # post = 'https://www.instagram.com/p/CXgEqtfDje4/'
-    # post_user = client.media_user(client.media_pk_from_url(post)).username
+    if not is_correct_post(client, args.post):
+        print('Неверная ссылка на пост')
+        exit()
 
-    # correct_comment_users = check_comments_users(client, post)
+    post = args.post
 
-    # ids_likers = search_likers(client, post)
-    # ids_followers = search_followers(client, post_user)
+    post_user = client.media_user(client.media_pk_from_url(post)).username
 
-    # complied_rules_users = set([
-    #     x[1] for x in correct_comment_users
-    #     if x[0] in ids_likers and x[0] in ids_followers
+    correct_comment_users = check_comments_users(client, post)
 
-    # ])
-    # pprint(complied_rules_users)
-    # pprint('Победитель конкурса: {}'.format(choice(complied_rules_users)))
+    ids_likers = search_likers(client, post)
+    ids_followers = search_followers(client, post_user)
 
-    complied_rules_users = [
-        'iamviolochka',
-        'indirabolova',
-        'kokorina__tanya',
-        'shishova_tatyana_',
-        'shishovantalia',
-        'toniabersanova'
-     ]
+    complied_rules_users = set([
+        x[1] for x in correct_comment_users
+        if x[0] in ids_likers and x[0] in ids_followers
+
+    ])
 
     pprint('Победитель конкурса: {}'.format(choice(complied_rules_users)))
