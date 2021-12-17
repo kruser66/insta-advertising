@@ -3,6 +3,7 @@ import re
 from instagrapi import Client
 from dotenv import load_dotenv
 from pprint import pprint
+from random import choice
 
 
 def is_user_exist(client, user) -> None:
@@ -58,20 +59,31 @@ if __name__ == '__main__':
     password = os.getenv('INSTAGRAM_PASSWORD')
 
     client = Client()
-    client.login(login, password)
+    # client.login(login, password)
 
-    post = 'https://www.instagram.com/p/CUFFXu5IYIN/'
-    post_user = 'goldencalfrevda'
+    # post = 'https://www.instagram.com/p/CXgEqtfDje4/'
+    # post_user = client.media_user(client.media_pk_from_url(post)).username
 
-    correct_comment_users = check_comments_users(client, post)
+    # correct_comment_users = check_comments_users(client, post)
 
-    id_likers = search_likers(client, post)
-    ids_followers = search_followers(client, post_user)
+    # ids_likers = search_likers(client, post)
+    # ids_followers = search_followers(client, post_user)
 
-    complied_rules_users = set([
-        x for x in correct_comment_users
-        if x[0] in id_likers and x[0] in ids_followers
+    # complied_rules_users = set([
+    #     x[1] for x in correct_comment_users
+    #     if x[0] in ids_likers and x[0] in ids_followers
 
-    ])
+    # ])
+    # pprint(complied_rules_users)
+    # pprint('Победитель конкурса: {}'.format(choice(complied_rules_users)))
 
-    pprint(complied_rules_users)
+    complied_rules_users = [
+        'iamviolochka',
+        'indirabolova',
+        'kokorina__tanya',
+        'shishova_tatyana_',
+        'shishovantalia',
+        'toniabersanova'
+     ]
+
+    pprint('Победитель конкурса: {}'.format(choice(complied_rules_users)))
