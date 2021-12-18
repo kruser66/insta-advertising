@@ -61,42 +61,53 @@ def search_followers(client, user):
     return followers
 
 
+def createParser():
+    parser = argparse.ArgumentParser(
+        description='Определяем победителя конкурса в Инстаграмм'
+    )
+    parser.add_argument('post', nargs='?', help='Ссылка на пост в Инстаграмм')
+
+    return parser
+
+
+def select_winner(client, post):
+    client.login(login, password)
+
+    if not is_correct_post(client, post):
+        print('Неверная ссылка на пост')
+        exit()
+
+    post_user = client.media_user(client.media_pk_from_url(post)).username
+
+    correct_comment_users = check_comments_users(client, post)
+
+    likers_ids = search_likers(client, post)
+    followers_ids = search_followers(client, post_user)
+
+    complied_rules_users = set([
+        user[1] for user in correct_comment_users
+        if user[0] in likers_ids and user[0] in followers_ids
+    ])
+
+    return choice(list(complied_rules_users))
+
+
 if __name__ == '__main__':
 
     load_dotenv()
     login = os.getenv('INSTAGRAM_LOGIN')
     password = os.getenv('INSTAGRAM_PASSWORD')
 
-    parser = argparse.ArgumentParser(
-        description='Определяем победителя конкурса в Инстаграмм'
-    )
-    parser.add_argument('post', nargs='?', help='Ссылка на пост в Инстаграмм')
-
+    parser = createParser()
     args = parser.parse_args()
     if not args.post:
         parser.print_help()
         exit()
 
     client = Client()
-    client.login(login, password)
 
-    if not is_correct_post(client, args.post):
-        print('Неверная ссылка на пост')
-        exit()
+    winner = select_winner(client, args.post)
 
-    post = args.post
-
-    post_user = client.media_user(client.media_pk_from_url(post)).username
-
-    correct_comment_users = check_comments_users(client, post)
-
-    ids_likers = search_likers(client, post)
-    ids_followers = search_followers(client, post_user)
-
-    complied_rules_users = set([
-        x[1] for x in correct_comment_users
-        if x[0] in ids_likers and x[0] in ids_followers
-
-    ])
-
-    pprint('Победитель конкурса: {}'.format(choice(complied_rules_users)))
+    print(
+        'Победитель конкурса: {}'.format(winner)
+    )
