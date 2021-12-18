@@ -3,7 +3,6 @@ import re
 import argparse
 from instagrapi import Client
 from dotenv import load_dotenv
-from pprint import pprint
 from random import choice
 
 
@@ -70,7 +69,7 @@ def createParser():
     return parser
 
 
-def select_winner(client, post):
+def select_winner(client, login, password, post):
     client.login(login, password)
 
     if not is_correct_post(client, post):
@@ -106,7 +105,7 @@ if __name__ == '__main__':
 
     client = Client()
 
-    winner = select_winner(client, args.post)
+    winner = select_winner(client, login, password, args.post)
 
     print(
         'Победитель конкурса: {}'.format(winner)
