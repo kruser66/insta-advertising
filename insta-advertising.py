@@ -70,11 +70,6 @@ def create_parser():
 
 
 def select_winner(client, login, password, post):
-    client.login(login, password)
-
-    if not is_correct_post(client, post):
-        print('Неверная ссылка на пост')
-        exit()
 
     post_user = client.media_user(client.media_pk_from_url(post)).username
 
@@ -104,8 +99,14 @@ if __name__ == '__main__':
         exit()
 
     client = Client()
+    client.login(login, password)
 
-    winner = select_winner(client, login, password, args.post)
+    post = args.post
+    if not is_correct_post(client, post):
+        print('Неверная ссылка на пост')
+        exit()
+
+    winner = select_winner(client, login, password, post)
 
     print(
         'Победитель конкурса: {}'.format(winner)
