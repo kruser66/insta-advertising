@@ -60,7 +60,7 @@ def search_followers(client, user):
     return followers
 
 
-def createParser():
+def create_parser():
     parser = argparse.ArgumentParser(
         description='Определяем победителя конкурса в Инстаграмм'
     )
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     login = os.getenv('INSTAGRAM_LOGIN')
     password = os.getenv('INSTAGRAM_PASSWORD')
 
-    parser = createParser()
+    parser = create_parser()
     args = parser.parse_args()
     if not args.post:
         parser.print_help()

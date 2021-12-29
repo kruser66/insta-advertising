@@ -5,8 +5,12 @@ __pycache__/
 
 # Environments
 .env
+*.cfg
 
 # dirs
 /config
+/include
+/lib
+/scripts
 
 cookie.txt
