@@ -19,7 +19,7 @@ def is_correct_post(client, post):
         return client.media_oembed(post)
 
 
-def check_comments_users(client, post):
+def search_correct_comment_users(client, post):
     # https://blog.jstassen.com/2016/03/code-regex-for-instagram-username-and-hashtags/
     regex = '(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)'
 
@@ -69,14 +69,14 @@ def select_winner(client, login, password, post):
 
     post_user = client.media_user(client.media_pk_from_url(post)).username
 
-    correct_comment_users = check_comments_users(client, post)
+    correct_comment_users = search_correct_comment_users(client, post)
 
     likers_ids = search_likers(client, post)
     followers_ids = search_followers(client, post_user)
 
     complied_rules_users = set([
-        user[1] for user in correct_comment_users
-        if user[0] in likers_ids and user[0] in followers_ids
+        user for user_id, user in correct_comment_users
+        if user_id in likers_ids and user_id in followers_ids
     ])
 
     return choice(list(complied_rules_users))
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     client = Client()
     client.login(login, password)
 
-    post = args.post
+    post = 'https://www.instagram.com/p/CX6aqgct-np/'
 
     if not is_correct_post(client, post):
         print('Неверная ссылка на пост. Скрипт остановлен!')
