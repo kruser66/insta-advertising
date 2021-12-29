@@ -24,6 +24,7 @@ def is_correct_post(client, post):
 
 
 def check_comments_users(client, post):
+    # https://blog.jstassen.com/2016/03/code-regex-for-instagram-username-and-hashtags/
     regex = '(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)'
 
     comments = client.media_comments(
