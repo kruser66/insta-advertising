@@ -2,25 +2,21 @@ import os
 import re
 import argparse
 from instagrapi import Client
+from instagrapi.exceptions import (
+    UserNotFound, ClientNotFoundError, ClientBadRequestError)
 from dotenv import load_dotenv
 from random import choice
+from contextlib import suppress
 
 
 def is_user_exist(client, user) -> None:
-    try:
-        client.user_id_from_username(user)
-        return True
-
-    except Exception:
-        pass
+    with suppress(UserNotFound):
+        return client.user_id_from_username(user)
 
 
 def is_correct_post(client, post):
-    try:
-        client.media_pk_from_url(post)
-        return True
-    except Exception:
-        return False
+    with suppress(ClientNotFoundError, ClientBadRequestError):
+        return client.media_oembed(post)
 
 
 def check_comments_users(client, post):
@@ -40,7 +36,6 @@ def check_comments_users(client, post):
         for marked_user in marked_users:
             if is_user_exist(client, marked_user):
                 correct_comment_users.append((user.pk, user.username))
-                continue
 
     return correct_comment_users
 
@@ -103,8 +98,9 @@ if __name__ == '__main__':
     client.login(login, password)
 
     post = args.post
+
     if not is_correct_post(client, post):
-        print('Неверная ссылка на пост')
+        print('Неверная ссылка на пост. Скрипт остановлен!')
         exit()
 
     winner = select_winner(client, login, password, post)
