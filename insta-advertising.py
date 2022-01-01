@@ -60,7 +60,7 @@ def create_parser():
     parser = argparse.ArgumentParser(
         description='Определяем победителя конкурса в Инстаграмм'
     )
-    parser.add_argument('post', nargs='?', help='Ссылка на пост в Инстаграмм')
+    parser.add_argument('post', nargs='+', help='Ссылка на пост в Инстаграмм')
 
     return parser
 
@@ -90,14 +90,11 @@ if __name__ == '__main__':
 
     parser = create_parser()
     args = parser.parse_args()
-    if not args.post:
-        parser.print_help()
-        exit()
 
     client = Client()
     client.login(login, password)
 
-    post = 'https://www.instagram.com/p/CX6aqgct-np/'
+    post = args.post
 
     if not is_correct_post(client, post):
         print('Неверная ссылка на пост. Скрипт остановлен!')
